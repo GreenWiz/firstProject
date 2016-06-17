@@ -23,6 +23,10 @@
         <constructor-arg value="/login"/>
     </bean>
 
+    <bean id="another" class="org.springframework.security.kerberos.web.authentication.SpnegoEntryPoint">
+        <constructor-arg value="/login"/>
+    </bean>
+
     <bean id="spnegoAuthenticationProcessingFilter"
           class="org.springframework.security.kerberos.web.authentication.SpnegoAuthenticationProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
