@@ -7,8 +7,7 @@
 	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
     <sec:http entry-point-ref="spnegoEntryPoint" use-expressions="true">
-        <!--<sec:http use-expressions="true">-->
-        <sec:intercept-url pattern="/sec" access="isFullyAuthenticated() and hasAnyRole('ROLE_DISP_ROSGRAN','ROLE_DISP_POGRAN','ROLE_DISP_CUSTOMS')"/>
+        <sec:intercept-url pattern="/sec" access="isFullyAuthenticated() and hasAnyRole('ROLE_DISP_ROSGRAN','ROLE_DISP_POGRAN')"/>
         <sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER"/>
 		<sec:intercept-url pattern="/officer/**" access="hasRole('ROLE_OFFICER_CUSTOMS')"/>
         <sec:form-login
@@ -70,6 +69,4 @@
             group-search-base="OU=Tamozhnya"
             group-search-filter="(member={0})"
             user-details-class="person"/>
-
-    <!--<bean id="dummyUserDetailsService" class="ru.niips.main.utils.DummyUserDetailsService"/>-->
 </beans>
