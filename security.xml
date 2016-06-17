@@ -1,22 +1,6 @@
-<beans xmlns:sec="http://www.springframework.org/schema/security"
-       xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-	http://www.springframework.org/schema/security
-	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
-
     <sec:http entry-point-ref="spnegoEntryPoint" use-expressions="true">
         <sec:intercept-url pattern="/sec" access="isFullyAuthenticated() and hasAnyRole('ROLE_DISP_ROSGRAN','ROLE_DISP_POGRAN')"/>
         <sec:custom-filter ref="spnegoAuthenticationProcessingFilter" position="BASIC_AUTH_FILTER"/>
-		<sec:intercept-url pattern="/officer/**" access="hasRole('ROLE_OFFICER_CUSTOMS')"/>
-        <sec:form-login
-                login-page="/login"
-                default-target-url="/sec"
-                authentication-failure-url="/login?error"
-                username-parameter="username"
-                password-parameter="password"/>
-        <sec:logout logout-success-url="/login?logout" logout-url="/logout"/>
     </sec:http>
 
     <bean id="spnegoEntryPoint" class="org.springframework.security.kerberos.web.authentication.SpnegoEntryPoint">
@@ -27,50 +11,9 @@
         <constructor-arg value="/login"/>
     </bean>
 
-    <bean id="spnegoAuthenticationProcessingFilter"
-          class="org.springframework.security.kerberos.web.authentication.SpnegoAuthenticationProcessingFilter">
+    <bean id="spnegoAuthenticationProcessingFilter" class="org.springframework.security.kerberos.web.authentication.SpnegoAuthenticationProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
         <property name="failureHandler" ref="handler"/>
     </bean>
 
-    <bean id="handler" class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
-        <property name="defaultFailureUrl" value="/login?error_krb"/>
-        <property name="allowSessionCreation" value="true"/>
-    </bean>
 
-    <sec:authentication-manager alias="authenticationManager">
-        <sec:authentication-provider ref="kerberosServiceAuthenticationProvider"/>
-        <sec:ldap-authentication-provider server-ref="ldapServ"
-                                          user-search-base="OU=Tamozhnya"
-                                          user-search-filter="(sAMAccountName={0})"
-                                          group-search-base="OU=Tamozhnya"
-                                          group-search-filter="(member={0})"
-                                          user-details-class="person"/>
-    </sec:authentication-manager>
-
-    <bean id="kerberosServiceAuthenticationProvider"
-          class="org.springframework.security.kerberos.authentication.KerberosServiceAuthenticationProvider">
-        <property name="ticketValidator">
-            <bean class="org.springframework.security.kerberos.authentication.sun.SunJaasKerberosTicketValidator">
-                <property name="servicePrincipal" value="HTTP/disp-cp177.ta08.isup-gg.local"/>
-                <property name="keyTabLocation" value="classpath:disp.keytab"/>
-            </bean>
-        </property>
-        <property name="userDetailsService" ref="userDetailsService"/>
-    </bean>
-
-    <sec:ldap-server
-            id="ldapServ"
-            url="ldap://10.31.0.4:389/DC=ta08,DC=isup-gg,DC=local"
-            manager-dn="CN=Igor Okishev,OU=Tamozhnya,DC=ta08,DC=isup-gg,DC=local"
-            manager-password="Qw1er2ty3"/>
-
-    <sec:ldap-user-service
-            id="userDetailsService"
-            server-ref="ldapServ"
-            user-search-base="OU=Tamozhnya"
-            user-search-filter="(userPrincipalName={0})"
-            group-search-base="OU=Tamozhnya"
-            group-search-filter="(member={0})"
-            user-details-class="person"/>
-</beans>
