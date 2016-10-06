@@ -2,8 +2,3 @@ foxtrot
 uniform
 charlie
 kilo
-
-foxtrot
-uniform
-charlie
-kilo
